@@ -23,19 +23,24 @@ namespace WindowsFormsApplication1
             InitializeComponent();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void paste_clip(object sender, EventArgs e)
+        private void start_capture(object sender, EventArgs e)
         {
             addToChain();
         }
 
-        private void richTextBox1_TextChanged_1(object sender, EventArgs e)
+        private void stop_capture(object sender, EventArgs e)
         {
+            removeFromChain();
+        }
 
+        private void clear_history(object sender, EventArgs e)
+        {
+            ClipboardHistory.Text = "";
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            removeFromChain();
         }
 
         [DllImport("User32.dll", CharSet = CharSet.Auto)]
@@ -47,6 +52,11 @@ namespace WindowsFormsApplication1
         public void addToChain()
         {
             _clipboardViewerNext = SetClipboardViewer(this.Handle); // Adds our form to the chain of clipboard viewers.
+        }
+
+        public void removeFromChain()
+        {
+            ChangeClipboardChain(this.Handle, _clipboardViewerNext); // Removes our from the chain of clipboard viewers when the form closes.
         }
 
         protected override void WndProc(ref Message m)
@@ -68,11 +78,6 @@ namespace WindowsFormsApplication1
 
                 //               }
             }
-        }
-
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            ChangeClipboardChain(this.Handle, _clipboardViewerNext); // Removes our from the chain of clipboard viewers when the form closes.
         }
     }
 }
