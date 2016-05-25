@@ -70,7 +70,9 @@ namespace WindowsFormsApplication1
                 if (iData.GetDataPresent(DataFormats.Text))
                 {
                     bufferText = (string)iData.GetData(DataFormats.Text);      // Clipboard text
-                    ClipboardHistory.Text = ClipboardHistory.Text + bufferText + "\n";
+                    if (bufferText != "") {
+                        ClipboardHistory.Text = ClipboardHistory.Text + bufferText + "\n";
+                    }
                 }
                 //                else if (iData.GetDataPresent(DataFormats.Bitmap))
                 //                {
