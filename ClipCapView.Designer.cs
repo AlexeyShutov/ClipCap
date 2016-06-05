@@ -42,6 +42,7 @@
             this.ClipboardHistory.Size = new System.Drawing.Size(508, 181);
             this.ClipboardHistory.TabIndex = 1;
             this.ClipboardHistory.Text = "";
+            this.ClipboardHistory.KeyDown += new System.Windows.Forms.KeyEventHandler(this.copyHistory);
             // 
             // button_clear
             // 

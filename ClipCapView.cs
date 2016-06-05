@@ -13,10 +13,17 @@ namespace WindowsFormsApplication1
 {
     public partial class ClipCap : Form
     {
+        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        public static extern IntPtr SetClipboardViewer(IntPtr hWndNewViewer);
+
+        [DllImport("User32.dll", CharSet = CharSet.Auto)]
+        public static extern bool ChangeClipboardChain(IntPtr hWndRemove, IntPtr hWndNewNext);
+
         string bufferText;
         private const int WM_DRAWCLIPBOARD = 0x0308;        // WM_DRAWCLIPBOARD message
         // Our variable that will hold the value to identify the next window in the clipboard viewer chain
         private IntPtr _clipboardViewerNext;
+        HashSet<string> textHistory = new HashSet<string>();
 
         public ClipCap()
         {
@@ -35,19 +42,25 @@ namespace WindowsFormsApplication1
 
         private void clear_history(object sender, EventArgs e)
         {
+            textHistory.Clear();
             ClipboardHistory.Text = "";
+        }
+
+
+        private void copyHistory(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.C)
+            {
+                Clipboard.SetText(String.Join(Environment.NewLine, textHistory));
+                textHistory.Clear();
+                addToChain();
+            }
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             removeFromChain();
         }
-
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
-        public static extern IntPtr SetClipboardViewer(IntPtr hWndNewViewer);
-
-        [DllImport("User32.dll", CharSet = CharSet.Auto)]
-        public static extern bool ChangeClipboardChain(IntPtr hWndRemove, IntPtr hWndNewNext);
 
         public void addToChain()
         {
@@ -71,7 +84,8 @@ namespace WindowsFormsApplication1
                 {
                     bufferText = (string)iData.GetData(DataFormats.Text);      // Clipboard text
                     if (bufferText != "") {
-                        ClipboardHistory.Text = ClipboardHistory.Text + bufferText + "\n";
+                        textHistory.Add(bufferText);
+                        ClipboardHistory.Text = String.Join(Environment.NewLine, textHistory);
                     }
                 }
                 //                else if (iData.GetDataPresent(DataFormats.Bitmap))
